@@ -14,7 +14,7 @@ public class CLHLock implements Lock{
 	}
 
 	/*锁的所有者（没有 read-and-write 操作所以可以不使用 AtomicReference）*/
-	private Node owner;
+	private volatile Node owner;
 	/*隐式链的尾部，表示最新在该锁等待的线程*/
 	private AtomicReference<Node> tail = new AtomicReference<>();
 	
