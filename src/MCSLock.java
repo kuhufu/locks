@@ -17,7 +17,6 @@ public class MCSLock implements Lock{
 
 	public void lock() {
 		Node currentNode = new Node(Thread.currentThread());
-//		Node predecessor = tail.getAndSet(currentNode);
 		Node predecessor = tail.getAndSet(currentNode);
 
 		// 如果没有前驱，则当前线程获得锁
