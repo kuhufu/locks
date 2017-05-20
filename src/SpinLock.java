@@ -1,8 +1,8 @@
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class SpinLock {
-	private AtomicReference<Thread> owner = new AtomicReference<Thread>();
+public class SpinLock implements Lock{
+	private AtomicReference<Thread> owner = new AtomicReference<>();
 	
 	public void lock() {
 		Thread t = Thread.currentThread();

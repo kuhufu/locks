@@ -10,32 +10,31 @@ public class Tester {
 		final SpinLock spinLock = new SpinLock();
 		final CLHLock clhLock = new CLHLock();
 		final MCSLock mcsLock = new MCSLock();
+		final TicketLock ticketLock = new TicketLock();
 		final Counter a = new Counter();
 		final int IOTime = 1000;
-
 		Runnable task = ()->{
-//		    MCSLock.Node node = new MCSLock.Node();
-//		    mcsLock.lock(node);
-//            clhLock.lock();
+//		    mcsLock.lock();
+            clhLock.lock();
 //            spinLock.lock();
-//			a.increment();
+//            ticketLock.lock();
+			a.increment();
+//			ticketLock.unlock();
 //			spinLock.unlock();
-//			clhLock.unlock();
-//            mcsLock.unlock(node);
+			clhLock.unlock();
+//            mcsLock.unlock();
 //            CPUOperation(2);
-            IOOperation(1000);
+//            IOOperation(2);
         };
 
-
-
-        int nTask = 200;
+        int nTask = 200000;
         int nCore = Runtime.getRuntime().availableProcessors();
 
-        for(int nThread = 200; nThread >= 50; nThread/=2) {
+        for(int nThread = 8; nThread >= 8; nThread/=2) {
             test(nThread, nTask, task);
         }
 
-
+        System.out.println(a.get());
     }
 
     public static void test(int nThread, int nTask, Runnable task) throws InterruptedException {

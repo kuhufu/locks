@@ -1,7 +1,7 @@
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class CLHLock {
+public class CLHLock implements Lock{
 
 	private static class Node {
 
@@ -13,19 +13,19 @@ public class CLHLock {
 		}
 	}
 
-	/*锁的所有者（没有 read-and-write 操作所以不使用 AtomicReference）*/
-	volatile Node owner;
+	/*锁的所有者（没有 read-and-write 操作所以可以不使用 AtomicReference）*/
+	private Node owner;
 	/*隐式链的尾部，表示最新在该锁等待的线程*/
-	AtomicReference<Node> tail = new AtomicReference<>();
+	private AtomicReference<Node> tail = new AtomicReference<>();
 	
 	public void lock() {
-		Node currentThread = new Node(Thread.currentThread());
-		Node predecessor = tail.getAndSet(currentThread);
+		Node currentNode = new Node(Thread.currentThread());
+		Node predecessor = tail.getAndSet(currentNode);
 		if (predecessor != null) {
 			// 在前驱的属性上自旋
 			while(predecessor.isLocked){}
 		}
-		owner = currentThread;
+		owner = currentNode;
 	}
 	
 	public void unlock() {
@@ -33,11 +33,10 @@ public class CLHLock {
 		if (Thread.currentThread() != owner.thread){
 			throw new IllegalMonitorStateException();
 		}
-		// 如果当前节点是最后一个，那么通过原子操作将tail设置为null
+		// 如果当前节点是最后一个，那么通过原子操作就可以将tail设置为null
 		if (!tail.compareAndSet(owner, null)) {
-			// 当前节点不是最后一个，那么改变状态，通知后继线程结束自旋
+			// 当前节点不是最后一个，那么改变状态，后继线程将会结束自旋
 			owner.isLocked = false;
 		}
-//		System.out.println("unlock");
 	}
 }
