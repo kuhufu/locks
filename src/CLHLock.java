@@ -3,7 +3,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class CLHLock {
 
-	public static class Node {
+	private static class Node {
 
 		volatile Thread thread;	//与该节点关联的线程
 		volatile boolean isLocked = true;	// 默认是等待锁
